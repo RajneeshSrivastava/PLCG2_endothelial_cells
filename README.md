@@ -7,4 +7,4 @@ This page includes the script for scRNA data analysis utilized for the manuscrip
 
 ## Please visit the below link for source code:
 
-https://github.com/RajneeshSrivastava/scRNA-skin-tissue-repair/blob/main/scRNA-seq_transcriptomics.md
+https://github.com/RajneeshSrivastava/PLCG2_endothelial_cells/blob/main/scRNA-seq_analysis.md

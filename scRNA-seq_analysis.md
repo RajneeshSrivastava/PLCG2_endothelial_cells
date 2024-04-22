@@ -230,7 +230,49 @@ for (i in (x)){
                 }
 ```
 #### Fig 1E
-```{r}
+```
 VlnPlot(E0_re25,"PLCG2",split.by="group",cols=c("blue","red"))
+```
+
+### GSEA analysis 
+```
+#library(Seurat)
+library(presto)
+library(msigdbr)
+library(tidyverse)
+library(fgsea)
+#library(dplyr)
+#library(ggplot2)
+
+#compute auROC and Wilcoxon p-value based on gaussian approximation
+EC.genes <- wilcoxauc(E, 'seurat_clusters')
+dplyr::count(EC.genes, group)
+
+#msigdbr_species() #select "Homo sapiens"
+#Subset gene collection for human hallmark_pathways:"H" from MSigDB #https://cran.r-project.org/web/packages/msigdbr/vignettes/msigdbr-intro.html
+m_df<- msigdbr(species = "Homo sapiens", category = "H")
+fgsea_sets<- m_df %>% split(x = .$gene_symbol, f = .$gs_name)
+
+#Subset cluster-specific genes
+cluster0.genes<- EC.genes %>% dplyr::filter(group == "0") %>% arrange(desc(auc)) %>% dplyr::select(feature, auc)
+ranks<- deframe(cluster0.genes)
+#head(ranks)
+
+#Cluster specific gene set enrichment analysis
+fgseaRes<- fgsea(fgsea_sets, stats = ranks, nperm = 1000)
+fgseaResTidy <- fgseaRes %>% as_tibble() %>% arrange(desc(NES))
+#fgseaResTidy %>% dplyr::select(-leadingEdge, -ES, -nMoreExtreme) %>% arrange(padj) %>% head()
+result=fgseaResTidy %>% dplyr::select(-leadingEdge, -ES, -nMoreExtreme) %>% arrange(padj)
+write.csv(result,"gsea_E0.csv")
+```
+##### Figure S2
+```
+#plot GSEA output
+gsea2=ggplot(fgseaResTidy %>% filter(padj < 0.01,NES<=-5|NES>=5), aes(reorder(pathway, NES), NES)) +
+     geom_col(aes(fill= NES > 0)) +
+     coord_flip() +
+     labs(x="Pathway", y="Normalized Enrichment Score",
+          title="Hallmark pathways NES from GSEA") + 
+     theme_minimal()
 ```
 ## Thank you

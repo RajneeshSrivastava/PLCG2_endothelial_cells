@@ -159,7 +159,7 @@ write.table(AvgExpS25$SCT,"sample25_AvgExp_SCT.txt") # Explore the table
 ```
 DefaultAssay(sample25)="SCT"
 #sample25
-sample25_markers=FindAllMarkers(sample25,only.pos = T,logfc.threshold = 0.30, min.pct = 0.10)
+sample25_markers=FindAllMarkers(sample25,only.pos = T,logfc.threshold = 0.30, min.pct = 0.10, recorrect_umi=FALSE)
 #head(sample25_markers)
 #write.table(sample50_markers,"All_marker_sample50.txt") # Explore the table
 ```
